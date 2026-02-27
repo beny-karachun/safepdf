@@ -24,21 +24,15 @@ const savedTheme = localStorage.getItem('safepdf-theme');
 if (savedTheme) root.setAttribute('data-theme', savedTheme);
 
 themeToggle.addEventListener('click', () => {
+    // Determine what's currently showing
     const current = root.getAttribute('data-theme');
-    // Cycle: auto (no attr) → light → dark → auto
-    if (!current) {
-        // Auto → check what's currently rendered and flip
-        const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        const next = isDark ? 'light' : 'dark';
-        root.setAttribute('data-theme', next);
-        localStorage.setItem('safepdf-theme', next);
-    } else if (current === 'light') {
-        root.setAttribute('data-theme', 'dark');
-        localStorage.setItem('safepdf-theme', 'dark');
-    } else {
-        root.removeAttribute('data-theme');
-        localStorage.removeItem('safepdf-theme');
-    }
+    const isDark = current === 'dark' ||
+        (!current && window.matchMedia('(prefers-color-scheme: dark)').matches);
+
+    // Simple flip: dark → light, light → dark
+    const next = isDark ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('safepdf-theme', next);
 });
 
 // --- DOM References ---
