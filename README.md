@@ -29,6 +29,12 @@ Instead of requiring Docker containers or Linux sandboxes (like [Dangerzone](htt
 | **Content Policy** | Strict CSP headers | Network kill switch — blocks all external connections |
 | **Pixel Flattening** | Canvas API | Converts structured data to inert image pixels |
 
+1. **Execution Isolation (The Web Worker):** The main UI thread never touches the raw PDF bytes. The file is handed off to an isolated background Web Worker running `pdf.js`. If a malformed file triggers a buffer overflow, it only crashes the invisible background thread — your main webpage and browser remain safe.
+
+2. **Display Isolation (The Strict Iframe):** The sterile image data extracted by the Worker is passed back and displayed inside a `<iframe sandbox="">` element, stripping it of all execution privileges. Even if a malicious script somehow survived the pixel flattening process, the sandbox prevents it from executing JavaScript, opening popups, or reading data from the main page.
+
+3. **Network Kill-Switch (Strict CSP):** The entire application is wrapped in a draconian Content Security Policy (`default-src 'self'`). Even if a tracking pixel survives the flattening process, the browser physically refuses to send outbound HTTP requests to external domains.
+
 ### 💀 3. Content Disarm & Reconstruction (CDR)
 
 CDR is the gold standard used by government agencies and defense contractors. The principle is simple: **don't try to detect threats — eliminate the possibility of threats existing.**
