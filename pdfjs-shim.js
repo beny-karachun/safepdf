@@ -20,12 +20,19 @@ globalThis.document = {
     body: { appendChild(el) { return el; }, removeChild() { } }
 };
 
-// pdf.js checks for document.fonts (FontFaceSet API) for font loading
-globalThis.document.fonts = {
-    ready: Promise.resolve(),
-    add() { },
-    delete() { },
-    has() { return false; },
-    forEach() { },
-    [Symbol.iterator]: function* () { }
-};
+// pdf.js uses document.fonts (FontFaceSet API) for font loading.
+// Web Workers have a real FontFaceSet at self.fonts — use it so
+// PDF.js can actually register the fonts it extracts from the PDF.
+if (self.fonts) {
+    globalThis.document.fonts = self.fonts;
+} else {
+    // Fallback stub for older browsers without worker FontFaceSet
+    globalThis.document.fonts = {
+        ready: Promise.resolve(),
+        add() { },
+        delete() { },
+        has() { return false; },
+        forEach() { },
+        [Symbol.iterator]: function* () { }
+    };
+}

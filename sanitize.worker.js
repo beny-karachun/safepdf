@@ -27,8 +27,9 @@ const CMAP_URL = new URL('./cmaps/', import.meta.url).href;
 const FONT_URL = new URL('./standard_fonts/', import.meta.url).href;
 const BASE_URL = new URL('./', import.meta.url).href;
 
-// Default render scale (2.0 ≈ ~150 DPI for standard PDF pages)
-const RENDER_SCALE = 2.0;
+// Default render scale (3.0 ≈ ~225 DPI for standard PDF pages)
+const RENDER_SCALE = 3.0;
+const JPEG_QUALITY = 0.92;
 
 /**
  * Main message handler
@@ -69,15 +70,19 @@ self.onmessage = async function (e) {
             );
             const ctx = canvas.getContext('2d');
 
+            // Fill white background — JPEG has no transparency
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
             // Render the page to flat pixels
             await page.render({ canvasContext: ctx, viewport }).promise;
 
-            // Convert to PNG blob — this is the "pixel flattening" step
+            // Convert to JPEG blob — this is the "pixel flattening" step
             // All scripts, macros, exploits are destroyed here
-            const blob = await canvas.convertToBlob({ type: 'image/png' });
+            const blob = await canvas.convertToBlob({ type: 'image/jpeg', quality: JPEG_QUALITY });
 
             pages.push({
-                png: blob,
+                jpeg: blob,
                 width: viewport.width,
                 height: viewport.height,
                 pageNum: i
