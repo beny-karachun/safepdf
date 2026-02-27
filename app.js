@@ -1,19 +1,17 @@
 /* ============================================
    SafePDF — Main Application Logic
    
-   Renders each PDF page to a regular <canvas>
-   in the main thread (full font support), then
-   merges the JPEG screenshots into a clean PDF.
+   All PDF rendering is offloaded to an isolated
+   Web Worker (sanitize.worker.js) running on a
+   separate thread with zero DOM access.
+   The main thread only handles UI and the final
+   jsPDF assembly from sterile JPEG blobs.
    ============================================ */
 
-import * as pdfjsLib from './pdf.min.mjs';
+const APP_VERSION = '1.0.7';
 
-// Point pdf.js to its own web worker for parsing
-pdfjsLib.GlobalWorkerOptions.workerSrc = './pdf.worker.min.mjs';
-
-const APP_VERSION = '1.0.6';
-const RENDER_SCALE = 3.0;   // ~225 DPI
-const JPEG_QUALITY = 0.92;
+// Instantiate the sanitization worker (Execution Isolation layer)
+const sanitizeWorker = new Worker('./sanitize.worker.js', { type: 'module' });
 
 // --- Theme toggle ---
 const themeToggle = document.getElementById('themeToggle');
@@ -185,63 +183,54 @@ async function handleFiles(files) {
     isProcessing = false;
 }
 
-// --- Render PDF pages to JPEG images (main thread, full font support) ---
+// --- Render PDF pages via the isolated Web Worker ---
 async function renderPdfToImages(buffer) {
     progressText.textContent = 'Loading PDF…';
 
-    const pdf = await pdfjsLib.getDocument({
-        data: new Uint8Array(buffer),
-        isEvalSupported: false,
-        cMapUrl: './cmaps/',
-        cMapPacked: true,
-        standardFontDataUrl: './standard_fonts/',
-    }).promise;
+    return new Promise((resolve, reject) => {
+        // Set up a one-shot handler for this sanitization job
+        function onMessage(e) {
+            const { type, data, pages, message } = e.data;
 
-    const numPages = pdf.numPages;
-    const pages = [];
+            switch (type) {
+                case 'status':
+                    progressText.textContent = data;
+                    break;
 
-    progressText.textContent = `Rendering ${numPages} page${numPages > 1 ? 's' : ''}…`;
+                case 'progress':
+                    progressFill.style.width = data.percent + '%';
+                    progressText.textContent = `Page ${data.page} / ${data.total}`;
+                    break;
 
-    for (let i = 1; i <= numPages; i++) {
-        const page = await pdf.getPage(i);
-        const viewport = page.getViewport({ scale: RENDER_SCALE });
+                case 'done':
+                    sanitizeWorker.removeEventListener('message', onMessage);
+                    sanitizeWorker.removeEventListener('error', onError);
+                    resolve(pages);
+                    break;
 
-        // Use a regular <canvas> — main thread has full font rendering
-        const canvas = document.createElement('canvas');
-        canvas.width = Math.floor(viewport.width);
-        canvas.height = Math.floor(viewport.height);
-        const ctx = canvas.getContext('2d');
+                case 'error':
+                    sanitizeWorker.removeEventListener('message', onMessage);
+                    sanitizeWorker.removeEventListener('error', onError);
+                    reject(new Error(message));
+                    break;
+            }
+        }
 
-        // White background (JPEG has no transparency)
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        function onError(err) {
+            sanitizeWorker.removeEventListener('message', onMessage);
+            sanitizeWorker.removeEventListener('error', onError);
+            reject(err);
+        }
 
-        // Render the page — fonts load properly in the main thread
-        await page.render({ canvasContext: ctx, viewport }).promise;
+        sanitizeWorker.addEventListener('message', onMessage);
+        sanitizeWorker.addEventListener('error', onError);
 
-        // Convert to JPEG blob — this is the "pixel flattening" step
-        // All scripts, macros, exploits are destroyed here
-        const blob = await new Promise(resolve =>
-            canvas.toBlob(resolve, 'image/jpeg', JPEG_QUALITY)
+        // Hand off the raw bytes to the isolated worker thread
+        sanitizeWorker.postMessage(
+            { type: 'sanitize', buffer },
+            [buffer]   // Transfer ownership (zero-copy)
         );
-
-        pages.push({
-            jpeg: blob,
-            width: viewport.width,
-            height: viewport.height,
-            pageNum: i
-        });
-
-        // Report progress
-        const percent = Math.round((i / numPages) * 100);
-        progressFill.style.width = percent + '%';
-        progressText.textContent = `Page ${i} / ${numPages}`;
-
-        // Clean up
-        page.cleanup();
-    }
-
-    return pages;
+    });
 }
 
 // --- Build clean PDF from flat images ---
