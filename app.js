@@ -56,27 +56,31 @@ dropZone.addEventListener('click', () => {
     fileInput.click();
 });
 
-// --- Drag & Drop ---
-dropZone.addEventListener('dragenter', (e) => {
+// --- Drag & Drop (full-page drop target, visual feedback on dropZone) ---
+document.addEventListener('dragenter', (e) => {
     e.preventDefault();
+    if (dropZone.hidden) return;
     dropZone.classList.add('drag-over');
 });
 
-dropZone.addEventListener('dragover', (e) => {
+document.addEventListener('dragover', (e) => {
     e.preventDefault();
+    if (dropZone.hidden) return;
     dropZone.classList.add('drag-over');
 });
 
-dropZone.addEventListener('dragleave', (e) => {
+document.addEventListener('dragleave', (e) => {
     e.preventDefault();
-    if (!dropZone.contains(e.relatedTarget)) {
+    // Only remove highlight when leaving the page entirely
+    if (!e.relatedTarget && !document.elementFromPoint(e.clientX, e.clientY)) {
         dropZone.classList.remove('drag-over');
     }
 });
 
-dropZone.addEventListener('drop', (e) => {
+document.addEventListener('drop', (e) => {
     e.preventDefault();
     dropZone.classList.remove('drag-over');
+    if (dropZone.hidden) return;
 
     const files = Array.from(e.dataTransfer.files).filter(
         f => f.type === 'application/pdf' || f.name.toLowerCase().endsWith('.pdf')

@@ -484,23 +484,6 @@ body {
     color: var(--text-tertiary);
 }
 
-.footer-links {
-    display: flex;
-    justify-content: center;
-    gap: 16px;
-    margin-top: 10px;
-}
-
-.footer-icon {
-    color: var(--text-tertiary);
-    transition: color var(--transition);
-    display: inline-flex;
-}
-
-.footer-icon:hover {
-    color: var(--text-primary);
-}
-
 /* ---- Animations ---- */
 @keyframes slideUp {
     from {
