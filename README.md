@@ -138,5 +138,6 @@ MIT
 ---
 
 <p align="center">
-  <strong>Your file never leaves your device. Ever.</strong>
+  <strong>Your file never leaves your device. Ever.</strong><br>
+  <em>No analytics. No tracking. No telemetry. Not even Google.</em>
 </p>

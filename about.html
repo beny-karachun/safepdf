@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="About SafePDF — How the client-side PDF sanitizer works and why it's secure.">
+    <title>About — SafePDF</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
+    <style>
+        .about-content {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 32px 24px 64px;
+        }
+
+        .about-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 32px;
+            transition: color var(--transition);
+        }
+
+        .about-back:hover {
+            color: var(--accent-hover);
+        }
+
+        .about-content h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: -0.025em;
+        }
+
+        .about-content .subtitle {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+
+        .about-content .tagline {
+            font-size: 0.9375rem;
+            color: var(--text-tertiary);
+            margin-bottom: 32px;
+        }
+
+        .about-content hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 32px 0;
+        }
+
+        .about-content h2 {
+            font-size: 1.375rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            letter-spacing: -0.02em;
+        }
+
+        .about-content h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-top: 28px;
+            margin-bottom: 12px;
+        }
+
+        .about-content p {
+            font-size: 0.9375rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-bottom: 16px;
+        }
+
+        .about-content strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .about-content a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .about-content a:hover {
+            text-decoration: underline;
+        }
+
+        .about-content ul,
+        .about-content ol {
+            padding-left: 20px;
+            margin-bottom: 16px;
+        }
+
+        .about-content li {
+            font-size: 0.9375rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-bottom: 6px;
+        }
+
+        .about-content li strong {
+            color: var(--text-primary);
+        }
+
+        .about-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            font-size: 0.875rem;
+        }
+
+        .about-content th {
+            text-align: left;
+            padding: 10px 12px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .about-content td {
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+
+        .about-content code {
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+            background: var(--bg-elevated);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.8125rem;
+            color: var(--text-primary);
+        }
+
+        .about-content pre {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+
+        .about-content pre code {
+            background: none;
+            padding: 0;
+            font-size: 0.8125rem;
+            line-height: 1.6;
+        }
+
+        .about-content .pipeline {
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+            font-size: 0.8125rem;
+            line-height: 1.8;
+            color: var(--text-secondary);
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            margin-bottom: 20px;
+            white-space: pre;
+            overflow-x: auto;
+        }
+
+        .about-footer {
+            text-align: center;
+            padding: 24px 0;
+            border-top: 1px solid var(--border);
+            margin-top: 16px;
+        }
+
+        .about-footer p {
+            font-size: 0.875rem;
+            color: var(--text-tertiary);
+            margin-bottom: 4px;
+        }
+
+        .about-footer em {
+            font-size: 0.8125rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="about-content">
+        <a href="index.html" class="about-back">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6" />
+            </svg>
+            Back to SafePDF
+        </a>
+
+        <h1>🛡️ SafePDF</h1>
+        <p class="subtitle"><strong>Content Disarm & Reconstruction (CDR)</strong> for PDF files, running entirely in
+            your browser.</p>
+        <p class="tagline">Your file <strong>never leaves your machine</strong>. Zero servers. Zero uploads. Zero trust
+            required.</p>
+
+        <hr>
+
+        <h2>Why SafePDF?</h2>
+
+        <h3>🔐 1. True Zero-Trust Privacy</h3>
+        <p>Most "safe PDF" tools require uploading your document to a cloud server. If you're handling a sensitive file
+            — a legal contract, a leaked document, a suspicious invoice — that upload is a privacy violation.</p>
+        <p><strong>SafePDF processes the entire file 100% locally on your hardware using JavaScript.</strong> The file
+            never touches a network. The developer has zero access, zero liability. You have total privacy.</p>
+
+        <h3>🏗️ 2. Browser-Native Defense-in-Depth</h3>
+        <p>Instead of requiring Docker containers or Linux sandboxes (like <a href="https://dangerzone.rocks/"
+                target="_blank" rel="noopener">Dangerzone</a>), SafePDF replicates multi-layer isolation natively in the
+            browser:</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Layer</th>
+                    <th>Mechanism</th>
+                    <th>Purpose</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Thread Isolation</strong></td>
+                    <td>Web Worker</td>
+                    <td>PDF parsing runs in an isolated execution thread with no DOM access</td>
+                </tr>
+                <tr>
+                    <td><strong>Display Isolation</strong></td>
+                    <td>Sandboxed Iframe</td>
+                    <td>Preview renders inside <code>&lt;iframe sandbox=""&gt;</code> — no scripts, no forms, no popups
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>Content Policy</strong></td>
+                    <td>Strict CSP</td>
+                    <td>Network kill switch — blocks all external connections</td>
+                </tr>
+                <tr>
+                    <td><strong>Pixel Flattening</strong></td>
+                    <td>Canvas API</td>
+                    <td>Converts structured data to inert image pixels</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <ol>
+            <li><strong>Execution Isolation (The Web Worker):</strong> The main UI thread never touches the raw PDF
+                bytes. The file is handed off to an isolated background Web Worker running <code>pdf.js</code>. If a
+                malformed file triggers a buffer overflow, it only crashes the invisible background thread — your main
+                webpage and browser remain safe.</li>
+            <li><strong>Display Isolation (The Strict Iframe):</strong> The sterile image data extracted by the Worker
+                is passed back and displayed inside a <code>&lt;iframe sandbox=""&gt;</code> element, stripping it of
+                all execution privileges. Even if a malicious script somehow survived the pixel flattening process, the
+                sandbox prevents it from executing JavaScript, opening popups, or reading data from the main page.</li>
+            <li><strong>Network Kill-Switch (Strict CSP):</strong> The entire application is wrapped in a draconian
+                Content Security Policy (<code>default-src 'self'</code>). Even if a tracking pixel survives the
+                flattening process, the browser physically refuses to send outbound HTTP requests to external domains.
+            </li>
+        </ol>
+
+        <h3>💀 3. Content Disarm & Reconstruction (CDR)</h3>
+        <p>CDR is the gold standard used by government agencies and defense contractors. The principle is simple:
+            <strong>don't try to detect threats — eliminate the possibility of threats existing.</strong></p>
+
+        <div class="pipeline">Compromised PDF ──▶ PDF.js parses & renders to &lt;canvas&gt;
+            ──▶ Canvas exported as JPEG (pixel flattening)
+            ──▶ jsPDF rebuilds a clean image-only PDF
+            ──▶ Structurally sterile output</div>
+
+        <p>Every active content vector is destroyed in the rendering step:</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Threat Vector</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>JavaScript / actions</td>
+                    <td>💀 Destroyed</td>
+                </tr>
+                <tr>
+                    <td>Embedded files / attachments</td>
+                    <td>💀 Destroyed</td>
+                </tr>
+                <tr>
+                    <td>Form fields / XFA</td>
+                    <td>💀 Destroyed</td>
+                </tr>
+                <tr>
+                    <td>Macros</td>
+                    <td>💀 Destroyed</td>
+                </tr>
+                <tr>
+                    <td>Launch actions</td>
+                    <td>💀 Destroyed</td>
+                </tr>
+                <tr>
+                    <td>Hyperlinks</td>
+                    <td>💀 Destroyed</td>
+                </tr>
+                <tr>
+                    <td>Metadata (author, timestamps)</td>
+                    <td>💀 Destroyed</td>
+                </tr>
+                <tr>
+                    <td>Hidden layers</td>
+                    <td>💀 Destroyed</td>
+                </tr>
+                <tr>
+                    <td>Tracking pixels</td>
+                    <td>💀 Destroyed</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>⚡ 4. Frictionless Security</h3>
+        <p>Security tools fail when they're annoying to use. SafePDF removes all friction:</p>
+        <ul>
+            <li><strong>No software to install</strong> — it's a web page</li>
+            <li><strong>No command line</strong> — drag and drop</li>
+            <li><strong>No accounts</strong> — no sign-up, no login, no tracking</li>
+            <li><strong>No internet required</strong> — works offline as a PWA</li>
+        </ul>
+        <p>A user drags a sketchy file into a browser tab, and it is instantly rendered safe.</p>
+
+        <hr>
+
+        <h2>How It Works</h2>
+        <ol>
+            <li><strong>Parse</strong> — <a href="https://mozilla.github.io/pdf.js/" target="_blank"
+                    rel="noopener">PDF.js</a> loads the document entirely in-browser</li>
+            <li><strong>Render</strong> — Each page is drawn to a <code>&lt;canvas&gt;</code> at 225 DPI (3× scale)</li>
+            <li><strong>Flatten</strong> — The canvas is exported as a JPEG blob, destroying all executable content</li>
+            <li><strong>Rebuild</strong> — <a href="https://github.com/parallax/jsPDF" target="_blank"
+                    rel="noopener">jsPDF</a> assembles the images into a new, clean PDF</li>
+        </ol>
+
+        <hr>
+
+        <div class="about-footer">
+            <p><strong>Your file never leaves your device. Ever.</strong></p>
+            <p><em>No analytics. No tracking. No telemetry. Not even Google.</em></p>
+        </div>
+    </div>
+</body>
+
+</html>

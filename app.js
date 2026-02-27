@@ -15,6 +15,32 @@ const APP_VERSION = '1.0.6';
 const RENDER_SCALE = 3.0;   // ~225 DPI
 const JPEG_QUALITY = 0.92;
 
+// --- Theme toggle ---
+const themeToggle = document.getElementById('themeToggle');
+const root = document.documentElement;
+
+// Restore saved preference
+const savedTheme = localStorage.getItem('safepdf-theme');
+if (savedTheme) root.setAttribute('data-theme', savedTheme);
+
+themeToggle.addEventListener('click', () => {
+    const current = root.getAttribute('data-theme');
+    // Cycle: auto (no attr) → light → dark → auto
+    if (!current) {
+        // Auto → check what's currently rendered and flip
+        const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const next = isDark ? 'light' : 'dark';
+        root.setAttribute('data-theme', next);
+        localStorage.setItem('safepdf-theme', next);
+    } else if (current === 'light') {
+        root.setAttribute('data-theme', 'dark');
+        localStorage.setItem('safepdf-theme', 'dark');
+    } else {
+        root.removeAttribute('data-theme');
+        localStorage.removeItem('safepdf-theme');
+    }
+});
+
 // --- DOM References ---
 const dropZone = document.getElementById('dropZone');
 const fileInput = document.getElementById('fileInput');

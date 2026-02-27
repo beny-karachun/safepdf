@@ -28,8 +28,9 @@
     --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* Dark theme — triggered by OS preference OR manual toggle */
 @media (prefers-color-scheme: dark) {
-    :root {
+    :root:not([data-theme="light"]) {
         --bg: #0a0a0a;
         --bg-card: #141414;
         --bg-elevated: #1c1c1e;
@@ -47,6 +48,26 @@
         --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
         --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.4);
     }
+}
+
+/* Manual dark mode override */
+:root[data-theme="dark"] {
+    --bg: #0a0a0a;
+    --bg-card: #141414;
+    --bg-elevated: #1c1c1e;
+    --text-primary: #fafafa;
+    --text-secondary: #a1a1aa;
+    --text-tertiary: #52525b;
+    --border: #27272a;
+    --border-hover: #3f3f46;
+    --accent: #3b82f6;
+    --accent-hover: #60a5fa;
+    --accent-glow: rgba(59, 130, 246, 0.12);
+    --success: #34d399;
+    --success-bg: rgba(52, 211, 153, 0.08);
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.4);
 }
 
 /* ---- Reset & Base ---- */
@@ -107,6 +128,73 @@ body {
     font-size: 1.25rem;
     font-weight: 700;
     letter-spacing: -0.025em;
+}
+
+/* ---- Header Controls ---- */
+.header-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* ---- Theme Toggle ---- */
+.theme-toggle {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 6px;
+    cursor: pointer;
+    color: var(--text-secondary);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+}
+
+.theme-toggle:hover {
+    color: var(--text-primary);
+    border-color: var(--border-hover);
+    background: var(--bg-elevated);
+}
+
+.theme-toggle svg {
+    width: 18px;
+    height: 18px;
+}
+
+/* Icon visibility: light mode = moon, dark mode = sun */
+.icon-sun {
+    display: none;
+}
+
+.icon-moon {
+    display: block;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .icon-sun {
+        display: block;
+    }
+
+    :root:not([data-theme="light"]) .icon-moon {
+        display: none;
+    }
+}
+
+:root[data-theme="dark"] .icon-sun {
+    display: block;
+}
+
+:root[data-theme="dark"] .icon-moon {
+    display: none;
+}
+
+:root[data-theme="light"] .icon-sun {
+    display: none;
+}
+
+:root[data-theme="light"] .icon-moon {
+    display: block;
 }
 
 /* ---- Toggle ---- */
@@ -479,9 +567,38 @@ body {
     border-top: 1px solid var(--border);
 }
 
-.footer p {
+.footer-tagline {
     font-size: 0.8125rem;
     color: var(--text-tertiary);
+    margin-bottom: 10px;
+}
+
+.footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+}
+
+.footer-icon {
+    color: var(--text-tertiary);
+    transition: color var(--transition);
+    display: inline-flex;
+}
+
+.footer-icon:hover {
+    color: var(--text-primary);
+}
+
+.footer-about {
+    color: var(--accent);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    font-weight: 500;
+    transition: color var(--transition);
+}
+
+.footer-about:hover {
+    color: var(--accent-hover);
 }
 
 /* ---- Animations ---- */
