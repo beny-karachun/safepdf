@@ -24,8 +24,9 @@ Instead of requiring Docker containers or Linux sandboxes (like [Dangerzone](htt
 
 | Layer | Mechanism | Purpose |
 |---|---|---|
-| **Thread Isolation** | Web Worker | PDF parsing runs in an isolated execution thread |
-| **Content Policy** | Strict CSP headers | Acts as a network kill switch — blocks all external connections |
+| **Thread Isolation** | Web Worker | PDF parsing runs in an isolated execution thread with no DOM access |
+| **Display Isolation** | Sandboxed Iframe | Preview renders inside `<iframe sandbox="">` — no scripts, no forms, no popups, unique origin |
+| **Content Policy** | Strict CSP headers | Network kill switch — blocks all external connections |
 | **Pixel Flattening** | Canvas API | Converts structured data to inert image pixels |
 
 ### 💀 3. Content Disarm & Reconstruction (CDR)

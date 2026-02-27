@@ -32,7 +32,7 @@ const previewBtn = document.getElementById('previewBtn');
 const downloadBtn = document.getElementById('downloadBtn');
 const resetBtn = document.getElementById('resetBtn');
 const previewContainer = document.getElementById('previewContainer');
-const previewPages = document.getElementById('previewPages');
+const previewFrame = document.getElementById('previewFrame');
 
 // --- State ---
 let isMultiFile = false;
@@ -266,28 +266,32 @@ function showResults() {
     }
 }
 
-// --- Preview toggle ---
-function togglePreview(fileData) {
+// --- Preview toggle (renders inside sandboxed iframe) ---
+async function togglePreview(fileData) {
     try {
         if (previewContainer.hidden) {
-            previewPages.innerHTML = '';
             const blobs = fileData.pageBlobs || [];
             if (blobs.length === 0) {
                 console.warn('[SafePDF] No page images available for preview');
                 return;
             }
-            blobs.forEach((blob, i) => {
-                const img = document.createElement('img');
-                img.src = URL.createObjectURL(blob);
-                img.alt = `Page ${i + 1}`;
-                img.loading = 'lazy';
-                previewPages.appendChild(img);
-            });
+
+            // Convert all blobs to base64 data URLs for embedding in srcdoc
+            const dataUrls = await Promise.all(blobs.map(b => blobToDataUrl(b)));
+
+            // Build a self-contained HTML page with just the images
+            // This HTML runs inside <iframe sandbox=""> — no scripts can execute
+            const imagesHtml = dataUrls.map((url, i) =>
+                `<img src="${url}" alt="Page ${i + 1}" style="width:100%;max-width:100%;height:auto;display:block;margin:0 auto 8px;border-radius:4px;box-shadow:0 1px 2px rgba(0,0,0,0.06);">`
+            ).join('');
+
+            const srcdoc = `<!DOCTYPE html><html><head><meta charset="utf-8"><style>*{margin:0;padding:0;box-sizing:border-box;}body{background:#f4f4f5;padding:16px;display:flex;flex-direction:column;align-items:center;gap:8px;}@media(prefers-color-scheme:dark){body{background:#1c1c1e;}}</style></head><body>${imagesHtml}</body></html>`;
+
+            previewFrame.srcdoc = srcdoc;
             previewContainer.hidden = false;
             previewBtn.textContent = 'Hide preview';
         } else {
-            previewPages.querySelectorAll('img').forEach(img => URL.revokeObjectURL(img.src));
-            previewPages.innerHTML = '';
+            previewFrame.srcdoc = '';
             previewContainer.hidden = true;
             previewBtn.textContent = 'Preview';
         }
@@ -313,8 +317,7 @@ resetBtn.addEventListener('click', () => {
 
     resultsSection.hidden = true;
     previewContainer.hidden = true;
-    previewPages.querySelectorAll('img').forEach(img => URL.revokeObjectURL(img.src));
-    previewPages.innerHTML = '';
+    previewFrame.srcdoc = '';
     processingSection.hidden = true;
     queueSection.hidden = true;
     queueList.innerHTML = '';

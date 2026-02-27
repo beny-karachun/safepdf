@@ -104,7 +104,9 @@
                     </div>
                 </div>
                 <div class="preview-container" id="previewContainer" hidden>
-                    <div class="preview-pages" id="previewPages"></div>
+                    <!-- Sandbox Layer: Display Isolation -->
+                    <!-- sandbox="" = most restrictive: no scripts, no forms, no popups, unique origin -->
+                    <iframe id="previewFrame" sandbox="" class="preview-frame" title="Sanitized PDF Preview"></iframe>
                 </div>
             </section>
         </main>

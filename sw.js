@@ -3,7 +3,7 @@
    Cache-first strategy for full offline use
    ============================================ */
 
-const CACHE_NAME = 'safepdf-v5';
+const CACHE_NAME = 'safepdf-v6';
 
 const ASSETS = [
     './',

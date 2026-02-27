@@ -464,21 +464,12 @@ body {
     animation: fadeIn 0.3s ease;
 }
 
-.preview-pages {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    padding: 16px;
-}
-
-.preview-pages img {
+.preview-frame {
     width: 100%;
-    max-width: 100%;
-    height: auto;
-    border-radius: 4px;
-    box-shadow: var(--shadow-sm);
+    height: 600px;
+    border: none;
     display: block;
+    border-radius: var(--radius);
 }
 
 /* ---- Footer ---- */
