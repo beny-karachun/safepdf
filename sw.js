@@ -3,11 +3,12 @@
    Cache-first strategy for full offline use
    ============================================ */
 
-const CACHE_NAME = 'safepdf-v6';
+const CACHE_NAME = 'safepdf-v7';
 
 const ASSETS = [
     './',
     './index.html',
+    './about.html',
     './style.css',
     './app.js',
     './sanitize.worker.js',
@@ -16,7 +17,11 @@ const ASSETS = [
     './jspdf.umd.min.js',
     './manifest.json',
     './icons/icon-192.png',
-    './icons/icon-512.png'
+    './icons/icon-512.png',
+    './fonts/Inter-400.ttf',
+    './fonts/Inter-500.ttf',
+    './fonts/Inter-600.ttf',
+    './fonts/Inter-700.ttf'
 ];
 
 // Install — cache all assets

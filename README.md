@@ -35,6 +35,8 @@ Instead of requiring Docker containers or Linux sandboxes (like [Dangerzone](htt
 
 3. **Network Kill-Switch (Strict CSP):** The entire application is wrapped in a draconian Content Security Policy (`default-src 'self'`). Even if a tracking pixel survives the flattening process, the browser physically refuses to send outbound HTTP requests to external domains.
 
+4. **Supply Chain Immunity (Zero CDN Dependencies):** Every dependency — PDF.js, jsPDF, fonts, icons — is vendored locally. There are no CDN calls, no `npm install`, no external `<script>` tags. The CSP enforces `font-src 'self'` and `style-src 'self'`, so even a compromised DNS cannot inject a malicious font or stylesheet. If it doesn't ship in the repo, it doesn't run.
+
 ### 💀 3. Content Disarm & Reconstruction (CDR)
 
 CDR is the gold standard used by government agencies and defense contractors. The principle is simple: **don't try to detect threats — eliminate the possibility of threats existing.**
