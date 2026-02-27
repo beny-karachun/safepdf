@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self' blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' blob: data:; frame-src blob:; worker-src 'self' blob:; connect-src 'self' blob:; object-src 'none'; base-uri 'none';">
+    <meta name="description"
+        content="SafePDF — Sanitize PDFs entirely in your browser. No uploads, no servers. Four layers of security.">
+    <title>SafePDF — Client-Side PDF Sanitizer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0a0a0a">
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
+</head>
+
+<body>
+    <div class="app" id="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                </svg>
+                <span class="logo-text">SafePDF</span>
+            </div>
+            <div class="header-controls">
+                <label class="toggle" id="multiFileToggle">
+                    <input type="checkbox" id="multiFileCheckbox">
+                    <span class="toggle-slider"></span>
+                    <span class="toggle-label">Multi-file</span>
+                </label>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main">
+            <!-- Drop Zone -->
+            <div class="drop-zone" id="dropZone">
+                <div class="drop-zone-content">
+                    <svg class="drop-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <polyline points="14 2 14 8 20 8" />
+                        <line x1="12" y1="18" x2="12" y2="12" />
+                        <polyline points="9 15 12 12 15 15" />
+                    </svg>
+                    <p class="drop-text">Drag PDF here or <button class="browse-btn" id="browseBtn">browse</button></p>
+                    <p class="drop-hint">Your file never leaves your device</p>
+                </div>
+                <input type="file" id="fileInput" accept=".pdf,application/pdf" hidden>
+            </div>
+
+            <!-- Processing Section -->
+            <section class="processing-section" id="processingSection" hidden>
+                <div class="file-card" id="fileCard">
+                    <div class="file-info">
+                        <svg class="file-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                            <polyline points="14 2 14 8 20 8" />
+                        </svg>
+                        <div class="file-meta">
+                            <span class="file-name" id="fileName"></span>
+                            <span class="file-size" id="fileSize"></span>
+                        </div>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <span class="progress-text" id="progressText">Preparing…</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Multi-file Queue -->
+            <section class="queue-section" id="queueSection" hidden>
+                <h2 class="queue-title">Queue</h2>
+                <div class="queue-list" id="queueList"></div>
+            </section>
+
+            <!-- Results Section -->
+            <section class="results-section" id="resultsSection" hidden>
+                <div class="results-header">
+                    <h2 class="results-title">
+                        <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                            <polyline points="22 4 12 14.01 9 11.01" />
+                        </svg>
+                        Sanitized
+                    </h2>
+                    <div class="results-actions">
+                        <button class="btn btn-secondary" id="previewBtn">Preview</button>
+                        <button class="btn btn-primary" id="downloadBtn">Download</button>
+                        <button class="btn btn-ghost" id="resetBtn">New file</button>
+                    </div>
+                </div>
+                <div class="preview-container" id="previewContainer" hidden>
+                    <iframe id="previewFrame" sandbox="allow-same-origin" class="preview-frame"></iframe>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Runs entirely in your browser · No data uploaded · 4-layer sandbox</p>
+        </footer>
+    </div>
+
+    <script src="jspdf.umd.min.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>
