@@ -5,7 +5,7 @@
 (function () {
     'use strict';
 
-    const APP_VERSION = '1.0.1';
+    const APP_VERSION = '1.0.5';
 
     // --- DOM References ---
     const dropZone = document.getElementById('dropZone');

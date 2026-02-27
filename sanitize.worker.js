@@ -13,13 +13,19 @@
    and posts back sterile PNG image data.
    ============================================ */
 
+// Import the DOM shim FIRST — pdf.js needs document stubs
+import './pdfjs-shim.js';
+
+// Now import pdf.js (shim is already in place)
 import * as pdfjsLib from './pdf.min.mjs';
 
 // pdf.js v4 requires explicit workerSrc inside a module Worker.
-// We resolve to an absolute URL to avoid any path ambiguity.
-// Note: pdf.js may fall back to "fake worker" mode (inline parsing)
-// which is actually fine — we're already in an isolated Web Worker.
 pdfjsLib.GlobalWorkerOptions.workerSrc = new URL('./pdf.worker.min.mjs', import.meta.url).href;
+
+// Resolve asset URLs once
+const CMAP_URL = new URL('./cmaps/', import.meta.url).href;
+const FONT_URL = new URL('./standard_fonts/', import.meta.url).href;
+const BASE_URL = new URL('./', import.meta.url).href;
 
 // Default render scale (2.0 ≈ ~150 DPI for standard PDF pages)
 const RENDER_SCALE = 2.0;
@@ -37,10 +43,14 @@ self.onmessage = async function (e) {
         postMsg('status', 'Loading PDF…', fileId);
 
         // Load the PDF from the raw bytes
-        // isEvalSupported: false prevents pdf.js from using eval() — extra security
         const loadingTask = pdfjsLib.getDocument({
             data: new Uint8Array(buffer),
-            isEvalSupported: false
+            isEvalSupported: false,
+            cMapUrl: CMAP_URL,
+            cMapPacked: true,
+            standardFontDataUrl: FONT_URL,
+            useSystemFonts: false,
+            docBaseUrl: BASE_URL
         });
         const pdf = await loadingTask.promise;
         const numPages = pdf.numPages;
