@@ -5,7 +5,7 @@
 (function () {
     'use strict';
 
-    const APP_VERSION = '1.0.0';
+    const APP_VERSION = '1.0.1';
 
     // --- DOM References ---
     const dropZone = document.getElementById('dropZone');
@@ -24,12 +24,12 @@
     const downloadBtn = document.getElementById('downloadBtn');
     const resetBtn = document.getElementById('resetBtn');
     const previewContainer = document.getElementById('previewContainer');
-    const previewFrame = document.getElementById('previewFrame');
+    const previewPages = document.getElementById('previewPages');
 
     // --- State ---
     let isMultiFile = false;
     let isProcessing = false;
-    let sanitizedBlobs = []; // Array of { name, blob, url }
+    let sanitizedBlobs = []; // Array of { name, blob, url, pageBlobs }
 
     // --- Multi-file toggle ---
     multiFileCheckbox.addEventListener('change', () => {
@@ -130,7 +130,7 @@
                 const url = URL.createObjectURL(blob);
                 const cleanName = file.name.replace(/\.pdf$/i, '') + '_safe.pdf';
 
-                sanitizedBlobs.push({ name: cleanName, blob, url });
+                sanitizedBlobs.push({ name: cleanName, blob, url, pageBlobs: result.pages.map(p => p.png) });
 
                 if (files.length > 1) {
                     updateQueueItem(i, 'done');
@@ -240,7 +240,7 @@
             // Single file
             downloadBtn.textContent = 'Download';
             downloadBtn.onclick = () => downloadFile(sanitizedBlobs[0]);
-            previewBtn.onclick = () => togglePreview(sanitizedBlobs[0].url);
+            previewBtn.onclick = () => togglePreview(sanitizedBlobs[0]);
         } else if (sanitizedBlobs.length > 1) {
             // Multi file — download all
             downloadBtn.textContent = `Download all (${sanitizedBlobs.length})`;
@@ -248,20 +248,39 @@
                 sanitizedBlobs.forEach(f => downloadFile(f));
             };
             // Preview first file
-            previewBtn.onclick = () => togglePreview(sanitizedBlobs[0].url);
+            previewBtn.onclick = () => togglePreview(sanitizedBlobs[0]);
         }
     }
 
     // --- Preview toggle ---
-    function togglePreview(blobUrl) {
-        if (previewContainer.hidden) {
-            previewFrame.src = blobUrl;
-            previewContainer.hidden = false;
-            previewBtn.textContent = 'Hide preview';
-        } else {
-            previewFrame.src = '';
-            previewContainer.hidden = true;
-            previewBtn.textContent = 'Preview';
+    function togglePreview(fileData) {
+        try {
+            if (previewContainer.hidden) {
+                // Render page images from PNG blobs
+                previewPages.innerHTML = '';
+                const blobs = fileData.pageBlobs || [];
+                if (blobs.length === 0) {
+                    console.warn('[SafePDF] No page images available for preview');
+                    return;
+                }
+                blobs.forEach((blob, i) => {
+                    const img = document.createElement('img');
+                    img.src = URL.createObjectURL(blob);
+                    img.alt = `Page ${i + 1}`;
+                    img.loading = 'lazy';
+                    previewPages.appendChild(img);
+                });
+                previewContainer.hidden = false;
+                previewBtn.textContent = 'Hide preview';
+            } else {
+                // Revoke image URLs and clear
+                previewPages.querySelectorAll('img').forEach(img => URL.revokeObjectURL(img.src));
+                previewPages.innerHTML = '';
+                previewContainer.hidden = true;
+                previewBtn.textContent = 'Preview';
+            }
+        } catch (err) {
+            console.error('[SafePDF] Preview error:', err);
         }
     }
 
@@ -284,7 +303,8 @@
         // Reset UI
         resultsSection.hidden = true;
         previewContainer.hidden = true;
-        previewFrame.src = '';
+        previewPages.querySelectorAll('img').forEach(img => URL.revokeObjectURL(img.src));
+        previewPages.innerHTML = '';
         processingSection.hidden = true;
         queueSection.hidden = true;
         queueList.innerHTML = '';
